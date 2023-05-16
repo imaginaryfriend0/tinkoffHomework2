@@ -2,12 +2,14 @@ package org.example.components;
 
 import org.example.entity.Order;
 import org.example.enums.ProductType;
+import org.example.repositories.AccountRepository;
 import org.example.repositories.OrderRepository;
 import org.example.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Component
 public class OrderComponent {
@@ -22,6 +24,9 @@ public class OrderComponent {
 
     @Autowired
     ProductRepository productRepository;
+
+    @Autowired
+    AccountRepository accountRepository;
 
 
     public List<Order> getListOfOrders() {
@@ -44,21 +49,29 @@ public class OrderComponent {
                              String productName) {
         var user = userComponent.getOrCreateUser(userName, userPhone);
         var product = productComponent.getProductByName(productName);
+        var account = accountRepository.findByUserId(user.getId());
 
-        if (product.getProductType() == ProductType.GOOD) {
-            if (product.getRemainder() < 1) {
-                throw new IllegalStateException(
-                        String.format(
-                                "Товаров '%s' не осталось", productName
-                        )
-                );
-            }
-            product.setRemainder(product.getRemainder() - 1);
-            productRepository.save(product);
-        }
-        var order = new Order(user.getId(), product.getId());
-        orderRepository.save(order);
-        return order;
+        if (account != null) {
+            if (account.getBalance()>=product.getPrice()) {
+                if (product.getProductType() == ProductType.GOOD) {
+                    if (product.getRemainder() < 1) {
+                        throw new IllegalStateException(
+                                String.format(
+                                        "Товаров '%s' не осталось", productName
+                                )
+                        );
+                    }
+                    product.setRemainder(product.getRemainder() - 1);
+                    productRepository.save(product);
+                }
+                var order = new Order(user.getId(), product.getId());
+                orderRepository.save(order);
+                return order;
+            } throw new NoSuchElementException(
+                    String.format("Остатка на балансе = '%s' недостаточно для оформления заказа",account.getBalance())
+            );
+        } throw new NoSuchElementException(
+                String.format("Аккаунта для пользователя с Id '%s' не существует",user.getId())
+        );
     }
-
 }

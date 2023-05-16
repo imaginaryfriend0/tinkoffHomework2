@@ -27,6 +27,7 @@ dependencies {
     testCompileOnly ("org.projectlombok:lombok:1.18.26")
     testAnnotationProcessor ("org.projectlombok:lombok:1.18.26")
     testImplementation("io.rest-assured:rest-assured:4.3.3")
+    testImplementation("org.mockito:mockito-core:4.3.1")
 }
 
 tasks.test {
