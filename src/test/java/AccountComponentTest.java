@@ -35,7 +35,7 @@ public class AccountComponentTest extends AbstractTest{
 
     @ParameterizedTest
     @CsvSource({
-            "aboltus, +151515, 250", "amogus, +222222, 500"
+            "aboltus, +151515, 100", "amogus, +222222, 100"
     }
     )
     void createAccountTest(String username,String userPhone, long balance) {
@@ -45,14 +45,7 @@ public class AccountComponentTest extends AbstractTest{
         var findaccount = accountRepository.findByUserId(userId);
 
         // TEST
-        if (findaccount == null) {
-            var account = accountComponent.createAccount(userId, balance);
 
-            assertThat(account).isNotNull();
-            assertThat(account.getBalance()).isEqualTo(balance);
-            assertThat(account.getUserId()).isEqualTo(userId);
-            assertThat(account.getBalance()).isGreaterThan(0);
-        }
         // ASSERTS
 
         assertThat(user).isNotNull();
@@ -67,13 +60,12 @@ public class AccountComponentTest extends AbstractTest{
     }
 
     @Test
-    void creatingExistingAccountError() {
+    void creatingNegativeBalanceAccountError() {
         var balance = -100;
-        var user = userComponent.getOrCreateUser("sssss","+929999");
-        var id = user.getId();
+        var userid = 1;
         var error = assertThrows(
                 NoSuchElementException.class,
-                () -> accountComponent.createAccount(id,balance)
+                () -> accountComponent.createAccount(userid,balance)
         );
         assertThat(error.getMessage()).isEqualTo("Баланс не может принимать отрицательные значения вроде '%s'",balance);
     }

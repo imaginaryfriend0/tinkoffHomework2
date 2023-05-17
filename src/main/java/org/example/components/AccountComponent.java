@@ -15,22 +15,19 @@ public class AccountComponent {
     AccountRepository accountRepository;
 
     @Autowired
-    UserComponent userComponent;
-
-    @Autowired
     UserRepository userRepository;
 
     public List<Account> getListOfAccounts() {
         return accountRepository.findAll();
     }
 
-    public Account findAccountByUserId (Long id){
-        var account = accountRepository.findByUserId(id);
+    public Account findAccountByUserId (Long userId){
+        var account = accountRepository.findByUserId(userId);
         if (account!=null){
             return account;
         }
         throw new NoSuchElementException(
-                String.format("Аккаунта пользователя с Id '%s' не существует!", id));
+                String.format("Аккаунта пользователя с Id '%s' не существует!", userId));
     }
 
     public Account addBalanceByPhoneNumber(String phone, long balance) {
@@ -51,19 +48,17 @@ public class AccountComponent {
     }
 
 
-    public Account createAccount(long userid, long balance) {
-        var account = accountRepository.findByUserId(userid);
+    public Account createAccount(long userId, long balance) {
+        var account = accountRepository.findByUserId(userId);
         if(account==null){
             if(balance>=0) {
-                Account accountNew = new Account(userid, balance);
+                Account accountNew = new Account(userId, balance);
                 accountRepository.save(accountNew);
                 return accountNew;
             } throw new NoSuchElementException(
                 String.format("Баланс не может принимать отрицательные значения вроде '%s'",balance)
             );
-        }throw new NoSuchElementException(
-                String.format("Аккаунт пользователя с Id '%s' уже существует!", userid)
-        );
+        }return account;
     }
 
 }

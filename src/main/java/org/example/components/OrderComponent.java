@@ -28,6 +28,9 @@ public class OrderComponent {
     @Autowired
     AccountRepository accountRepository;
 
+    @Autowired
+    AccountComponent accountComponent;
+
 
     public List<Order> getListOfOrders() {
         return orderRepository.findAll();
@@ -50,7 +53,6 @@ public class OrderComponent {
         var user = userComponent.getOrCreateUser(userName, userPhone);
         var product = productComponent.getProductByName(productName);
         var account = accountRepository.findByUserId(user.getId());
-
         if (account != null) {
             if (account.getBalance()>=product.getPrice()) {
                 if (product.getProductType() == ProductType.GOOD) {

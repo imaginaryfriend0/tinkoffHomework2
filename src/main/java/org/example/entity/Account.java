@@ -16,7 +16,7 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
     private long userId;
-    private long balance = 100;
+    private long balance;
 
     public Account(long userId, long balance) {
         this.userId = userId;
